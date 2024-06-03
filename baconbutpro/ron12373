@@ -344,26 +344,6 @@ async function fluxus() {
     }
 }
 
-async function arceus() {
-    try {
-        let hwid = (new URL(window.location.href)).searchParams.get('hwid');
-        await fetch(`https://spdmteam.com/api/keysystem?hwid=${hwid}&zone=Europe/Rome&advertiser=linkvertise`, { mode: 'no-cors' });
-        let checkpointsDone = 1;
-        while (checkpointsDone <= 3) {
-            await linkvertiseSpoof(`https://spdmteam.com/api/keysystem?step=${checkpointsDone}&advertiser=linkvertise`);
-            notification(`${checkpointsDone}/3 stages completed`, 1900);
-            await sleep(2000);
-            checkpointsDone++;
-        }
-        notification('bypassed successfully');
-        await sleep(3000);
-        window.location.assign('https://spdmteam.com/key-system-getkey');
-    }
-    catch (e) {
-        handleError(e);
-    }
-}
-
 async function delta() {
     if (document.title == 'Just a moment...') { return; }
     let id = new URL(window.location.href).searchParams.get('id');
@@ -938,10 +918,6 @@ async function start() {
         }
         case 'keysystem.fluxteam.net': {
             window.location.assign('https://fluxusbypass.pages.dev/?link=' + encodeURIComponent(window.location.href));
-            break;
-        }
-        case 'spdmteam.com': {
-            await arceus();
             break;
         }
         case 'gateway.platoboost.com': {
