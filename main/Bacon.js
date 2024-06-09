@@ -180,93 +180,122 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
             }
 
             async function pandadevelopment() {
-                const antiAdblockRemover = setInterval(() => {
-                    try {
-                        let antiAdblock = document.querySelector('.adblock_title');
-                        while (antiAdblock && antiAdblock.parentElement != document.body) {
-                            antiAdblock = antiAdblock.parentElement;
-                        }
-                        if (antiAdblock) {
-                            antiAdblock.remove();
-                            clearInterval(antiAdblockRemover);
-                        }
-                    } catch (e) { }
-                }, 500);
+    let antiAdblockRemover = setInterval(removeAntiAdblock, 500);
 
-                if (document.documentElement.innerHTML.includes('you got the key')) {
-                    notification('Bypassed successfully');
-                    return;
+    if (document.documentElement.innerHTML.includes('you got the key')) {
+        notification('bypassed successfully');
+        return;
+    }
+    else if (!document.getElementsByTagName('form').length) {
+        let providers = Array.from(document.getElementsByTagName('a'));
+        let supportedProviders = ['Linkvertise', 'Short Jambo'];
+        for (let provider of providers) {
+            let providerName = provider.firstChild.innerHTML;
+            if (supportedProviders.includes(providerName)) {
+                window.location.assign(provider.href);
+                return;
+            }
+        }
+        throw new Error('no supported ad provider found');
+    }
+    function getAdLink() {
+        let form = document.getElementsByTagName('form')[0];
+        let data = new FormData(form);
+        return new Promise(async (resolve, reject) => {
+            GM.xmlHttpRequest({
+                method: "POST",
+                url: form.action,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Referer': window.location.href,
+                },
+                data: new URLSearchParams(data),
+                onload: function (response) {
+                    resolve(response.finalUrl);
+                },
+                onerror: function (error) {
+                    reject(error);
                 }
-
-                if (!document.querySelector('form')) {
-                    const providers = Array.from(document.querySelectorAll('a'));
-                    const supportedProviders = ['Linkvertise', 'Short Jambo'];
-                    for (let provider of providers) {
-                        let providerName = provider.innerText;
-                        if (supportedProviders.includes(providerName)) {
-                            window.location.assign(provider.href);
-                            return;
-                        }
-                    }
-                    throw new Error('No supported ad provider found');
+            });
+        });
+    }
+    function getDestUrl(link) {
+        let url = new URL(encodeURI(link));
+        switch (url.hostname) {
+            case 'linkvertise.com': {
+                return atob(url.searchParams.get('r'));
+            }
+            case 'short-jambo.com': {
+                return url.search.split('&url=')[1];
+            }
+            default: {
+                if ((new URL(window.location.href)).searchParams.get('provider')) {
+                    return false;
                 }
-
-                const getAdLink = () => {
-                    const form = document.querySelector('form');
-                    const data = new FormData(form);
-                    return new Promise((resolve, reject) => {
-                        GM.xmlHttpRequest({
-                            method: "POST",
-                            url: form.action,
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                                'Referer': window.location.href,
-                            },
-                            data: new URLSearchParams(data),
-                            onload: response => resolve(response.finalUrl),
-                            onerror: error => reject(error)
-                        });
-                    });
-                };
-
-                const getDestUrl = (link) => {
-                    const url = new URL(encodeURI(link));
-                    switch (url.hostname) {
-                        case 'linkvertise.com':
-                            return atob(url.searchParams.get('r'));
-                        case 'short-jambo.com':
-                            return url.search.split('&url=')[1];
-                        default:
-                            if (new URL(window.location.href).searchParams.get('provider')) {
-                                return false;
-                            } else {
-                                throw new Error('Unsupported ad provider');
-                            }
-                    }
-                };
-
-                try {
-                    const currentUrl = new URL(window.location.href);
-                    const hwid = currentUrl.searchParams.get('hwid');
-                    const service = currentUrl.searchParams.get('service');
-                    const token = currentUrl.searchParams.get('sessiontoken');
-                    const provider = currentUrl.searchParams.get('provider');
-
-                    if (document.getElementById('cf-turnstile')) {
-                        await getTurnstileResponse();
-                    }
-
-                    const adUrl = await getAdLink();
-                    const dest = getDestUrl(adUrl);
-                    if (dest) {
-                        window.location.replace(dest);
-                        await sleep(3000);
-                    }
-                    window.location.assign(`${currentUrl.origin}/keyauth/?provider=${provider}&service=${service}&sessiontoken=${token}&hwid=${hwid}`);
-                } catch (e) {
-                    handleError(e);
+                else {
+                    throw new Error('unsupported ad provider');
                 }
             }
+        }
+    }
+    function removeAntiAdblock() {
+        try {
+            let antiAdblock = document.getElementsByClassName('adblock_title')[0];
+            while (antiAdblock.parentElement != document.body) {
+                antiAdblock = antiAdblock.parentElement;
+            }
+            antiAdblock.remove();
+            clearInterval(antiAdblockRemover);
+        } catch (e) { }
+    }
+    const customSleepTimes = {
+        'vegax': 11000,
+        'laziumtools': 11000,
+        'adelhub': 11000,
+        'neoxkey': 16000,
+    };
+    try {
+        let currentUrl = new URL(window.location.href);
+        let hwid = currentUrl.searchParams.get('hwid');
+        let service = currentUrl.searchParams.get('service');
+        let token = currentUrl.searchParams.get('sessiontoken');
+        let provider = currentUrl.searchParams.get('provider');
+
+        if (document.getElementById('cf-turnstile')) {
+            await getTurnstileResponse();
+        }
+
+        let adUrl = await getAdLink(hwid, service, token);
+        let dest = getDestUrl(adUrl);
+        if (!dest) {
+            window.location.assign(`https://pandadevelopment.net/getkey?hwid=${hwid}&service=${service}`);
+        }
+
+        let sleepTime = 3000;
+        Object.keys(customSleepTimes).forEach(key => {
+            if (service == key) {
+                sleepTime = customSleepTimes[key];
+            }
+        });
+        await sleep(sleepTime);
+
+        await linkvertiseSpoof(dest);
+        notification('stage completed');
+
+        await sleep(3000);
+
+        let newUrl = new URL(dest);
+        token = newUrl.searchParams.get('sessiontoken');
+        let nextCheckpoint = `https://pandadevelopment.net/getkey?hwid=${hwid}&service=${service}&sessiontoken=${token}`;
+        if (provider) {
+            nextCheckpoint += `&provider=${provider}`;
+        }
+        window.location.assign(nextCheckpoint);
+    }
+    catch (e) {
+        handleError(e);
+    }
+}
 
             async function tsuohub() {
                 const url = new URL(window.location.href);
@@ -432,7 +461,7 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
 
         async function start() {
            GM_notification({
-                text: 'Bypass starting...\n(want a faster, ad free bypass? join discord.gg/keybypass to get faster bypass with no ads.)',
+                text: 'Bypass Starting Please Wait...',
                 title: "INFO",
                 url: '',
                 silent: false,
