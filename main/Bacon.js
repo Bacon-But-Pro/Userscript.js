@@ -51,134 +51,144 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
             const { handleError, sleep, linkvertiseSpoof, getTurnstileResponse, getGrecaptchaResponse, notification, base64decode } = __webpack_require__(712)
 
             async function codex() {
-                let session;
-                while (!session) {
-                    session = localStorage.getItem("android-session");
-                    await sleep(1000);
-                }
+    let session;
+    while (!session) {
+        session = localStorage.getItem("android-session");
+        await sleep(1000);
+    }
+    if (document?.getElementsByTagName('a')?.length && document.getElementsByTagName('a')[0].innerHTML.includes('Get started')) {
+        document.getElementsByTagName('a')[0].click();
+    }
 
-                if (document.querySelector('a:contains("Get started")')) {
-                    document.querySelector('a:contains("Get started")').click();
-                }
+    async function getStages() {
+        let response = await fetch('https://api.codex.lol/v1/stage/stages', {
+            method: 'GET',
+            headers: {
+                'Android-Session': session
+            }
+        });
+        let data = await response.json();
 
-                const getStages = async () => {
-                    const response = await fetch('https://api.codex.lol/v1/stage/stages', {
-                        method: 'GET',
-                        headers: {
-                            'Android-Session': session
-                        }
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        return data.authenticated ? [] : data.stages;
-                    } else {
-                        throw new Error("Failed to get stages");
-                    }
-                };
+        if (data.success) {
+            if (data.authenticated) {
+                return [];
+            }
+            return data.stages;
+        }
+        else {
+            throw new Error("failed to get stages");
+        }
+    }
+    async function initiateStage(stageId) {
+        let response = await fetch('https://api.codex.lol/v1/stage/initiate', {
+            method: 'POST',
+            headers: {
+                'Android-Session': session,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ stageId })
+        });
+        let data = await response.json();
 
-                const initiateStage = async (stageId) => {
-                    const response = await fetch('https://api.codex.lol/v1/stage/initiate', {
-                        method: 'POST',
-                        headers: {
-                            'Android-Session': session,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ stageId })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        return data.token;
-                    } else {
-                        throw new Error("Failed to initiate stage");
-                    }
-                };
+        if (data.success) {
+            return data.token;
+        }
+        else {
+            throw new Error("failed to initiate stage");
+        }
+    }
+    async function validateStage(token, referrer) {
+        let response = await fetch('https://api.codex.lol/v1/stage/validate', {
+            method: 'POST',
+            headers: {
+                'Android-Session': session,
+                'Content-Type': 'application/json',
+                'Task-Referrer': referrer
+            },
+            body: JSON.stringify({ token })
+        });
+        let data = await response.json();
 
-                const validateStage = async (token, referrer) => {
-                    const response = await fetch('https://api.codex.lol/v1/stage/validate', {
-                        method: 'POST',
-                        headers: {
-                            'Android-Session': session,
-                            'Content-Type': 'application/json',
-                            'Task-Referrer': referrer
-                        },
-                        body: JSON.stringify({ token })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        return data.token;
-                    } else {
-                        throw new Error("Failed to validate stage");
-                    }
-                };
+        if (data.success) {
+            return data.token;
+        }
+        else {
+            throw new Error("failed to validate stage");
+        }
 
-                const authenticate = async (validatedTokens) => {
-                    const response = await fetch('https://api.codex.lol/v1/stage/authenticate', {
-                        method: 'POST',
-                        headers: {
-                            'Android-Session': session,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ tokens: validatedTokens })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        return true;
-                    } else {
-                        throw new Error("Failed to authenticate");
-                    }
-                };
+    }
+    async function authenticate(validatedTokens) {
+        let response = await fetch('https://api.codex.lol/v1/stage/authenticate', {
+            method: 'POST',
+            headers: {
+                'Android-Session': session,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tokens: validatedTokens })
+        });
+        let data = await response.json();
 
-                const decodeTokenData = (token) => {
-                    let data = token.split(".")[1];
-                    data = base64decode(data);
-                    return JSON.parse(data);
-                };
+        if (data.success) {
+            return true;
+        }
+        else {
+            throw new Error("failed to authenticate");
+        }
+    }
 
-                let stages = await getStages();
-                let stagesCompleted = 0;
-                while (localStorage.getItem(stages[stagesCompleted]) && stagesCompleted < stages.length) {
-                    stagesCompleted++;
-                }
-                if (stagesCompleted == stages.length) {
-                    return;
-                }
+    function decodeTokenData(token) {
+        let data = token.split(".")[1];
+        data = base64decode(data);
+        return JSON.parse(data);
+    }
 
-                let validatedTokens = [];
-                try {
-                    while (stagesCompleted < stages.length) {
-                        let stageId = stages[stagesCompleted].uuid;
-                        let initToken = await initiateStage(stageId);
+    let stages = await getStages();
+    let stagesCompleted = 0;
+    while (localStorage.getItem(stages[stagesCompleted]) && stagesCompleted < stages.length) {
+        stagesCompleted++;
+    }
+    if (stagesCompleted == stages.length) {
+        return;
+    }
 
-                        await sleep(6000);
+    let validatedTokens = [];
+    try {
+        while (stagesCompleted < stages.length) {
+            let stageId = stages[stagesCompleted].uuid;
+            let initToken = await initiateStage(stageId);
 
-                        let tokenData = decodeTokenData(initToken);
-                        let referrer;
-                        if (tokenData.link.includes('loot-links')) {
-                            referrer = 'https://loot-links.com/';
-                        } else if (tokenData.link.includes('loot-link')) {
-                            referrer = 'https://loot-link.com/';
-                        } else {
-                            referrer = 'https://linkvertise.com/';
-                        }
+            await sleep(6000);
 
-                        let validatedToken = await validateStage(initToken, referrer);
-                        validatedTokens.push({ uuid: stageId, token: validatedToken });
-                        notification(`${stagesCompleted + 1}/${stages.length} stages completed`, 5000);
-
-                        await sleep(1500);
-
-                        stagesCompleted++;
-                    }
-                    if (await authenticate(validatedTokens)) {
-                        notification('Bypassed successfully');
-                        await sleep(3000);
-                        window.location.reload();
-                    }
-                } catch (e) {
-                    handleError(e);
-                }
+            let tokenData = decodeTokenData(initToken);
+            let referrer;
+            if (tokenData.link.includes('loot-links')) {
+                referrer = 'https://loot-links.com/';
+            }
+            else if (tokenData.link.includes('loot-link')) {
+                referrer = 'https://loot-link.com/';
+            }
+            else {
+                referrer = 'https://linkvertise.com/';
             }
 
+            let validatedToken = await validateStage(initToken, referrer);
+            validatedTokens.push({ uuid: stageId, token: validatedToken });
+            notification(`${stagesCompleted + 1}/${stages.length} stages completed`, 5000);
+
+            await sleep(1500);
+
+            stagesCompleted++;
+        }
+        if (authenticate(validatedTokens)) {
+            notification('bypassed successfully');
+            await sleep(3000);
+            window.location.reload();
+        }
+    }
+    catch (e) {
+        handleError(e);
+    }
+}
             async function pandadevelopment() {
     let antiAdblockRemover = setInterval(removeAntiAdblock, 500);
 
@@ -730,14 +740,14 @@ async function linkvertise() {
                 removeNotification();
 
                 // Try the second API
-                let fallbackResponse = await fetch("https://bypass.pm/bypass2?url=" + currentUrl);
+                let fallbackResponse = await fetch("https://api.bypass.vip/bypass?url=" + currentUrl);
                 if (!fallbackResponse.ok) {
                     throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
                 }
 
                 let fallbackData = await fallbackResponse.json();
-                if (fallbackData.bypassed.startsWith("https://")) {
-                    window.location.href = fallbackData.bypassed;
+                if (fallbackData.result.startsWith("https://")) {
+                    window.location.href = fallbackData.result;
                 } else {
                     console.warn("Fallback API response doesn't contain a valid URL. Redirecting to bypass.city.");
                     throw new Error("Fallback API response doesn't contain a valid URL");
