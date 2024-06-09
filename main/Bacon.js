@@ -631,59 +631,102 @@ async function linkvertise() {
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const currentUrl = window.location.href;
     let errorShown = false;
+    let notificationElement = null;
 
     // Function to create a notification box
     function showNotification(message) {
-        const notification = document.createElement('div');
-        notification.id = 'notification-box';
-        notification.style.position = 'fixed';
-        notification.style.bottom = '20px';
-        notification.style.left = '20px';
-        notification.style.padding = '20px';
-        notification.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        notification.style.color = 'white';
-        notification.style.borderRadius = '10px';
-        notification.style.zIndex = '1000';
-        notification.innerText = message;
-        document.body.appendChild(notification);
+        const notificationContainer = document.createElement('div');
+        notificationContainer.id = 'notification-container';
+        notificationContainer.style.position = 'fixed';
+        notificationContainer.style.bottom = '20px';
+        notificationContainer.style.left = '20px';
+        notificationContainer.style.zIndex = '1000';
+        notificationContainer.style.display = 'flex';
+        notificationContainer.style.alignItems = 'center';
+        notificationContainer.style.justifyContent = 'center';
+
+        notificationElement = document.createElement('div');
+        notificationElement.id = 'notification-box';
+        notificationElement.style.padding = '20px';
+        notificationElement.style.backgroundColor = '#4CAF50';
+        notificationElement.style.color = 'white';
+        notificationElement.style.borderRadius = '10px';
+        notificationElement.innerText = message;
+
+        notificationContainer.appendChild(notificationElement);
+        document.body.appendChild(notificationContainer);
     }
 
     // Remove existing notification if any
     function removeNotification() {
-        const existingNotification = document.getElementById('notification-box');
-        if (existingNotification) {
-            existingNotification.remove();
+        const existingNotificationContainer = document.getElementById('notification-container');
+        if (existingNotificationContainer) {
+            existingNotificationContainer.remove();
         }
     }
 
     try {
         await sleep(2000); // Sleep for 2000 milliseconds (2 seconds)
 
-        const response = await fetch("https://ethos-testing.vercel.app/api/adlinks/bypass?url=" + currentUrl);
+        // Try the first API
+        let response = await fetch("https://ethos-testing.vercel.app/api/adlinks/bypass?url=" + currentUrl);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        window.location.href = data.bypassed;
+        if (data.bypassed.startsWith("https://")) {
+            window.location.href = data.bypassed;
+        } else {
+            console.warn("First API response doesn't contain a valid URL. Trying fallback bypass methods.");
+            throw new Error("First API response doesn't contain a valid URL");
+        }
     } catch (e) {
         if (!errorShown) {
-            console.error("Error: API might be offline. Using fallback bypass method.", e);
+            console.error("Error: API might be offline. Trying fallback bypass methods.", e);
 
             // Remove any existing notification to avoid duplicates
             removeNotification();
 
             // Show the notification box
-            showNotification("Error: API might be offline. Redirecting to bypass.city...");
+            showNotification("API might be offline. Trying fallback bypass methods...");
 
             errorShown = true;
 
-            // Wait for 4 more seconds before redirecting
+            // Wait for 2 more seconds before trying the next API
             await sleep(4000);
 
-            const fallbackUrl = "https://bypass.city/bypass?bypass=" + encodeURIComponent(currentUrl);
-            window.location.href = fallbackUrl;
+            try {
+                // Remove any existing notification before trying the second API
+                removeNotification();
+
+                // Try the second API
+                let fallbackResponse = await fetch("https://bypass.pm/bypass2?url=" + currentUrl);
+                if (!fallbackResponse.ok) {
+                    throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
+                }
+
+                let fallbackData = await fallbackResponse.json();
+                if (fallbackData.bypassed.startsWith("https://")) {
+                    window.location.href = fallbackData.bypassed;
+                } else {
+                    console.warn("Fallback API response doesn't contain a valid URL. Redirecting to bypass.city.");
+                    throw new Error("Fallback API response doesn't contain a valid URL");
+                }
+            } catch (fallbackError) {
+                console.error("Fallback API also failed. Redirecting to bypass.city.", fallbackError);
+                showNotification("All bypass methods failed. Redirecting to bypass.city...");
+
+                // Wait for 2 more seconds before redirecting to bypass.city
+                await sleep(4000);
+
+                const bypassCityUrl = "https://bypass.city/bypass?bypass=" + encodeURIComponent(currentUrl);
+                window.location.href = bypassCityUrl;
+            }
         }
+    } finally {
+        // Remove notification box if it's still present after API attempts
+        removeNotification();
     }
 }
 
