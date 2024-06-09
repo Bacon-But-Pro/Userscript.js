@@ -618,7 +618,7 @@ function sleep(ms) {
 
 async function sub2get() {
     try {
-        await sleep(10000); // Sleep for 10000 milliseconds (10 seconds)
+        await sleep(5000); // Sleep for 10000 milliseconds (10 seconds)
         const response = await fetch("https://ethos-testing.vercel.app/api/sub2get/bypass?link=" + window.location.href);
         const data = await response.json();
         window.location.href = data.bypassed;
@@ -628,13 +628,62 @@ async function sub2get() {
 }
 
 async function linkvertise() {
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const currentUrl = window.location.href;
+    let errorShown = false;
+
+    // Function to create a notification box
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.id = 'notification-box';
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.left = '20px';
+        notification.style.padding = '20px';
+        notification.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        notification.style.color = 'white';
+        notification.style.borderRadius = '10px';
+        notification.style.zIndex = '1000';
+        notification.innerText = message;
+        document.body.appendChild(notification);
+    }
+
+    // Remove existing notification if any
+    function removeNotification() {
+        const existingNotification = document.getElementById('notification-box');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+    }
+
     try {
-        await sleep(2000); // Sleep for 10000 milliseconds (10 seconds)
-        const response = await fetch("https://ethos-testing.vercel.app/api/adlinks/bypass?url=" + window.location.href);
+        await sleep(2000); // Sleep for 2000 milliseconds (2 seconds)
+
+        const response = await fetch("https://ethos-testing.vercel.app/api/adlinks/bypass?url=" + currentUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         window.location.href = data.bypassed;
     } catch (e) {
-        alert("Error:", e);
+        if (!errorShown) {
+            console.error("Error: API might be offline. Using fallback bypass method.", e);
+
+            // Remove any existing notification to avoid duplicates
+            removeNotification();
+
+            // Show the notification box
+            showNotification("Error: API might be offline. Redirecting to bypass.city...");
+
+            errorShown = true;
+
+            // Wait for 4 more seconds before redirecting
+            await sleep(4000);
+
+            const fallbackUrl = "https://bypass.city/bypass?bypass=" + encodeURIComponent(currentUrl);
+            window.location.href = fallbackUrl;
+        }
     }
 }
 
