@@ -1,3 +1,59 @@
+// ==UserScript==
+// @name         Bypass Key System
+// @homepageURL  https://discord.gg/gFNAH7WNZj
+// @namespace    https://greasyfork.org/en/scripts/493960-arceus-bypass
+// @version      1.8
+// @description  Bypass Arceus, Hydrogen, Delta, Trigon, Vegax, Codex, Linkvertise
+// @author       Bacon But Pro
+// @match        https://linkvertise.com/376138/arceus-x-neo-key-system-1?o=sharing*
+// @match        https://linkvertise.com/*
+// @match        https://socialwolvez.com/*
+// @match        https://rekonise.com/*
+// @match        https://mboost.me/a/*
+// @match        https://loot-link.com/s?*
+// @match        https://loot-links.com/s?*
+// @match        https://lootlink.org/s?*
+// @match        https://lootlinks.co/s?*
+// @match        https://gateway.platoboost.com/a/2569?id=*
+// @match        https://gateway.platoboost.com/a/8?id=*
+// @match        https://lootdest.info/s?*
+// @match        https://lootdest.org/s?*
+// @match        https://mobile.codex.lol/*
+// @match        https://pandadevelopment.net/getkey?*
+// @match        https://lootdest.com/s?*
+// @match        https://links-loot.com/s?*
+// @match        https://linksloot.net/s?*
+// @match        https://spdmteam.com/key-system*
+// @match        https://*/recaptcha/*
+// @match        https://*.hcaptcha.com/*hcaptcha-challenge*
+// @match        https://*.hcaptcha.com/*checkbox*
+// @match        https://*.hcaptcha.com/*captcha*
+// @require     https://greasyfork.org/scripts/464929-module-jquery-xiaoying/code/module_jquery_XiaoYing.js
+// @require     https://greasyfork.org/scripts/464780-global-module/code/global_module.js
+
+// @run-at       document-end
+// @grant        GM_xmlhttpRequest
+// @grant        GM_notification
+// @grant        GM_openInTab
+
+// @license      Bacon
+// @connect      linkvertise.com
+// @connect      short-jambo.com
+// @connect      api.codex.lol
+// @connect      cdn.jsdelivr.net
+// @connect      fluxteam.net
+// @connect      spdmteam.com
+// @connect      api-gateway.platoboost.com
+// @connect      api.valyse.best
+// @connect      api.keyrblx.com
+// @connect      pandadevelopment.net
+// @connect      hohohubv-ac90f67762c4.herokuapp.com
+// @connect      tsuo-script.xyz
+// @icon         https://cdn141.picsart.com/351217840073211.png
+// @downloadURL https://update.greasyfork.org/scripts/493960/Bypass%20Key%20System.user.js
+// @updateURL https://update.greasyfork.org/scripts/493960/Bypass%20Key%20System.meta.js
+// ==/UserScript==
+
 if (document.title == 'Just a moment...') {
     return;
 }
@@ -708,14 +764,14 @@ async function linkvertise() {
         await sleep(2000); // Sleep for 2000 milliseconds (2 seconds)
 
         // Try the first API
-        let response = await fetch("https://ethos-testing.vercel.app/api/adlinks/bypass?url=" + currentUrl);
+        let response = await fetch("https://api.bypass.vip/bypass?url=" + currentUrl);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        if (data.bypassed.startsWith("https://")) {
-            window.location.href = data.bypassed;
+        if (data.result.startsWith("https://")) {
+            window.location.href = data.result;
         } else {
             console.warn("First API response doesn't contain a valid URL. Trying fallback bypass methods.");
             throw new Error("First API response doesn't contain a valid URL");
@@ -740,14 +796,14 @@ async function linkvertise() {
                 removeNotification();
 
                 // Try the second API
-                let fallbackResponse = await fetch("https://api.bypass.vip/bypass?url=" + currentUrl);
+                let fallbackResponse = await fetch("https://ethos-testing.vercel.app/api/adlinks/bypass?url=" + currentUrl);
                 if (!fallbackResponse.ok) {
                     throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
                 }
 
                 let fallbackData = await fallbackResponse.json();
-                if (fallbackData.result.startsWith("https://")) {
-                    window.location.href = fallbackData.result;
+                if (fallbackData.bypassed.startsWith("https://")) {
+                    window.location.href = fallbackData.bypassed;
                 } else {
                     console.warn("Fallback API response doesn't contain a valid URL. Redirecting to bypass.city.");
                     throw new Error("Fallback API response doesn't contain a valid URL");
