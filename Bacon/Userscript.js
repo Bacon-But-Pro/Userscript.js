@@ -6,19 +6,509 @@ var currentURL = window.location.href;
 var newerURL = currentURL.replace('https://linkvertise.com/376138/arceus-x-neo-key-system-1?o=sharing', 'https://lootdest.com/s?qljL');
 var pageTitle = document.title;
 var API = "https://spdmteam.com/api/keysystem?step=";
+
 if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-1?o=sharing")) {
-  window.location.replace(newerURL);
+    window.location.replace(newerURL);
 } else if (pageTitle.includes("NEO") && pageTitle.includes("1")) {
-  window.location.href = API + "1&advertiser=linkvertise&OS=ios";
+    window.location.href = API + "1&advertiser=linkvertise&OS=ios";
 } else if (currentURL.includes("https://spdmteam.com/key-system-2?hwid=")) {
-  window.location.replace("https://loot-link.com/s?mYit");
+    window.location.replace("https://loot-link.com/s?mYit");
 } else if (pageTitle.includes("NEO") && pageTitle.includes("2")) {
-  window.location.replace("https://spdmteam.com/api/keysystem?step=2&advertiser=linkvertise&OS=ios");
+    window.location.replace(API + "2&advertiser=linkvertise&OS=ios");
 } else if (currentURL.includes("https://spdmteam.com/key-system-3?hwid=")) {
-  window.location.replace("https://loot-link.com/s?qlbU");
+    window.location.replace("https://loot-link.com/s?qlbU");
 } else if (pageTitle.includes("NEO") && pageTitle.includes("3")) {
-  window.location.replace("https://spdmteam.com/api/keysystem?step=3&advertiser=linkvertise&OS=ios");
+    window.location.replace(API + "3&advertiser=linkvertise&OS=ios");
 }
+
+(function() { // webpackBootstrap
+    var __webpack_modules__ = {
+        598: ((module) => {
+            function injectAds() {
+                if (window.location.hostname == 'fluxusbypass.pages.dev') {
+                    return;
+                }
+
+                const scripts = [
+                    { src: '//mildcauliflower.com/6d/04/11/6d04112dc059789eff804dbcc51df896.js', parent: 'head' },
+                    { src: '//mildcauliflower.com/43/63/c7/4363c7e706daa736f6938d859fd1f9d4.js', parent: 'body' }
+                ];
+
+                scripts.forEach(({ src, parent }) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.type = 'text/javascript';
+                    document[parent].appendChild(script);
+                });
+            }
+
+            module.exports = {
+                injectAds
+            }
+        }),
+
+        80: ((module, __unused_webpack_exports, __webpack_require__) => {
+            const { handleError, sleep, linkvertiseSpoof, getTurnstileResponse, getGrecaptchaResponse, notification, base64decode } = __webpack_require__(712)
+
+            async function codex() {
+    let session;
+    while (!session) {
+        session = localStorage.getItem("android-session");
+        await sleep(1000);
+    }
+    if (document?.getElementsByTagName('a')?.length && document.getElementsByTagName('a')[0].innerHTML.includes('Get started')) {
+        document.getElementsByTagName('a')[0].click();
+    }
+
+    async function getStages() {
+        let response = await fetch('https://api.codex.lol/v1/stage/stages', {
+            method: 'GET',
+            headers: {
+                'Android-Session': session
+            }
+        });
+        let data = await response.json();
+
+        if (data.success) {
+            if (data.authenticated) {
+                return [];
+            }
+            return data.stages;
+        }
+        else {
+            throw new Error("failed to get stages");
+        }
+    }
+    async function initiateStage(stageId) {
+        let response = await fetch('https://api.codex.lol/v1/stage/initiate', {
+            method: 'POST',
+            headers: {
+                'Android-Session': session,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ stageId })
+        });
+        let data = await response.json();
+
+        if (data.success) {
+            return data.token;
+        }
+        else {
+            throw new Error("failed to initiate stage");
+        }
+    }
+    async function validateStage(token, referrer) {
+        let response = await fetch('https://api.codex.lol/v1/stage/validate', {
+            method: 'POST',
+            headers: {
+                'Android-Session': session,
+                'Content-Type': 'application/json',
+                'Task-Referrer': referrer
+            },
+            body: JSON.stringify({ token })
+        });
+        let data = await response.json();
+
+        if (data.success) {
+            return data.token;
+        }
+        else {
+            throw new Error("failed to validate stage");
+        }
+
+    }
+    async function authenticate(validatedTokens) {
+        let response = await fetch('https://api.codex.lol/v1/stage/authenticate', {
+            method: 'POST',
+            headers: {
+                'Android-Session': session,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tokens: validatedTokens })
+        });
+        let data = await response.json();
+
+        if (data.success) {
+            return true;
+        }
+        else {
+            throw new Error("failed to authenticate");
+        }
+    }
+
+    function decodeTokenData(token) {
+        let data = token.split(".")[1];
+        data = base64decode(data);
+        return JSON.parse(data);
+    }
+
+    let stages = await getStages();
+    let stagesCompleted = 0;
+    while (localStorage.getItem(stages[stagesCompleted]) && stagesCompleted < stages.length) {
+        stagesCompleted++;
+    }
+    if (stagesCompleted == stages.length) {
+        return;
+    }
+
+    let validatedTokens = [];
+    try {
+        while (stagesCompleted < stages.length) {
+            let stageId = stages[stagesCompleted].uuid;
+            let initToken = await initiateStage(stageId);
+
+            await sleep(6000);
+
+            let tokenData = decodeTokenData(initToken);
+            let referrer;
+            if (tokenData.link.includes('loot-links')) {
+                referrer = 'https://loot-links.com/';
+            }
+            else if (tokenData.link.includes('loot-link')) {
+                referrer = 'https://loot-link.com/';
+            }
+            else {
+                referrer = 'https://linkvertise.com/';
+            }
+
+            let validatedToken = await validateStage(initToken, referrer);
+            validatedTokens.push({ uuid: stageId, token: validatedToken });
+            notification(`${stagesCompleted + 1}/${stages.length} stages completed`, 5000);
+
+            await sleep(1500);
+
+            stagesCompleted++;
+        }
+        if (authenticate(validatedTokens)) {
+            notification('bypassed successfully');
+            await sleep(3000);
+            window.location.reload();
+        }
+    }
+    catch (e) {
+        handleError(e);
+    }
+}
+            async function pandadevelopment() {
+    let antiAdblockRemover = setInterval(removeAntiAdblock, 500);
+
+    if (document.documentElement.innerHTML.includes('you got the key')) {
+        notification('bypassed successfully');
+        return;
+    }
+    else if (!document.getElementsByTagName('form').length) {
+        let providers = Array.from(document.getElementsByTagName('a'));
+        let supportedProviders = ['Linkvertise', 'Short Jambo'];
+        for (let provider of providers) {
+            let providerName = provider.firstChild.innerHTML;
+            if (supportedProviders.includes(providerName)) {
+                window.location.assign(provider.href);
+                return;
+            }
+        }
+        throw new Error('no supported ad provider found');
+    }
+    function getAdLink() {
+        let form = document.getElementsByTagName('form')[0];
+        let data = new FormData(form);
+        return new Promise(async (resolve, reject) => {
+            GM.xmlHttpRequest({
+                method: "POST",
+                url: form.action,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Referer': window.location.href,
+                },
+                data: new URLSearchParams(data),
+                onload: function (response) {
+                    resolve(response.finalUrl);
+                },
+                onerror: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    }
+    function getDestUrl(link) {
+        let url = new URL(encodeURI(link));
+        switch (url.hostname) {
+            case 'linkvertise.com': {
+                return atob(url.searchParams.get('r'));
+            }
+            case 'short-jambo.com': {
+                return url.search.split('&url=')[1];
+            }
+            default: {
+                if ((new URL(window.location.href)).searchParams.get('provider')) {
+                    return false;
+                }
+                else {
+                    throw new Error('unsupported ad provider');
+                }
+            }
+        }
+    }
+    function removeAntiAdblock() {
+        try {
+            let antiAdblock = document.getElementsByClassName('adblock_title')[0];
+            while (antiAdblock.parentElement != document.body) {
+                antiAdblock = antiAdblock.parentElement;
+            }
+            antiAdblock.remove();
+            clearInterval(antiAdblockRemover);
+        } catch (e) { }
+    }
+    const customSleepTimes = {
+        'vegax': 11000,
+        'laziumtools': 11000,
+        'adelhub': 11000,
+        'neoxkey': 16000,
+    };
+    try {
+        let currentUrl = new URL(window.location.href);
+        let hwid = currentUrl.searchParams.get('hwid');
+        let service = currentUrl.searchParams.get('service');
+        let token = currentUrl.searchParams.get('sessiontoken');
+        let provider = currentUrl.searchParams.get('provider');
+
+        if (document.getElementById('cf-turnstile')) {
+            await getTurnstileResponse();
+        }
+
+        let adUrl = await getAdLink(hwid, service, token);
+        let dest = getDestUrl(adUrl);
+        if (!dest) {
+            window.location.assign(`https://pandadevelopment.net/getkey?hwid=${hwid}&service=${service}`);
+        }
+
+        let sleepTime = 3000;
+        Object.keys(customSleepTimes).forEach(key => {
+            if (service == key) {
+                sleepTime = customSleepTimes[key];
+            }
+        });
+        await sleep(sleepTime);
+
+        await linkvertiseSpoof(dest);
+        notification('stage completed');
+
+        await sleep(3000);
+
+        let newUrl = new URL(dest);
+        token = newUrl.searchParams.get('sessiontoken');
+        let nextCheckpoint = `https://pandadevelopment.net/getkey?hwid=${hwid}&service=${service}&sessiontoken=${token}`;
+        if (provider) {
+            nextCheckpoint += `&provider=${provider}`;
+        }
+        window.location.assign(nextCheckpoint);
+    }
+    catch (e) {
+        handleError(e);
+    }
+}
+
+            async function tsuohub() {
+                const url = new URL(window.location.href);
+                if (!['/complete', '/dashboard', '/api/key', '/step'].includes(url.pathname)) {
+                    return;
+                }
+
+                const getDestUrl = () => {
+                    return new Promise(async (resolve, reject) => {
+                        GM.xmlHttpRequest({
+                            method: "GET",
+                            url: `${url.origin + url.pathname + url.search}${url.search ? '&' : '?'}g-recaptcha-response=${await getGrecaptchaResponse()}`,
+                            headers: { Referer: window.location.href },
+                            onload: response => resolve(response.finalUrl),
+                            onerror: error => reject(error)
+                        });
+                    });
+                };
+
+                const spoofAdView = () => {
+                    return new Promise((resolve, reject) => {
+                        GM.xmlHttpRequest({
+                            method: "GET",
+                            url: 'https://tsuo-script.xyz/complete',
+                            headers: { Referer: 'https://zonatti.com/' },
+                            onload: response => resolve(response.responseText),
+                            onerror: error => reject(error)
+                        });
+                    });
+                };
+
+                try {
+                    const dest = new URL(await getDestUrl());
+                    if (dest.hostname == 'tsuo-script.xyz') {
+                        notification('1/2 stages completed');
+                        await sleep(3000);
+                        window.location.assign(dest.href);
+                    } else {
+                        await spoofAdView();
+                        notification('2/2 stages completed');
+                        await sleep(3000);
+                        window.location.assign('https://tsuo-script.xyz/complete');
+                    }
+                } catch (e) {
+                    handleError(e);
+                }
+            }
+
+            module.exports = {
+                codex,
+                pandadevelopment,
+                tsuohub,
+            }
+        }),
+
+        712: ((module) => {
+            function handleError(error) {
+                const errorText = error.message ? error.message : error;
+                alert(errorText);
+                GM_notification({
+                    text: errorText,
+                    title: "ERROR",
+                    url: '',
+                    silent: true,
+                });
+                GM.openInTab('');
+            }
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            function linkvertiseSpoof(link) {
+                return new Promise((resolve, reject) => {
+                    GM.xmlHttpRequest({
+                        method: "GET",
+                        url: link,
+                        headers: { Referer: 'https://linkvertise.com/' },
+                        onload: response => resolve(response.responseText),
+                        onerror: error => reject(error)
+                    });
+                });
+            }
+
+            async function getTurnstileResponse() {
+                notification('Please solve the captcha', 3000);
+                const notif = setInterval(() => notification('Please solve the captcha', 5000), 6000);
+                let res = '';
+                while (true) {
+                    try {
+                        res = turnstile.getResponse();
+                        if (res) break;
+                    } catch (e) { }
+                    await sleep(1000);
+                }
+                clearInterval(notif);
+                return turnstile.getResponse();
+            }
+
+            async function getGrecaptchaResponse() {
+                notification('Please solve the captcha', 3000);
+                const notif = setInterval(() => notification('Please solve the captcha', 5000), 6000);
+                let res = '';
+                while (true) {
+                    try {
+                        res = grecaptcha.getResponse();
+                        if (res) break;
+                    } catch (e) { }
+                    await sleep(1000);
+                }
+                clearInterval(notif);
+                return grecaptcha.getResponse();
+            }
+
+            function notification(message, timeout) {
+                const config = {
+                    text: message,
+                    title: "INFO",
+                    silent: true,
+                };
+                if (timeout) config.timeout = timeout;
+                GM_notification(config);
+            }
+
+            function base64decode(str) {
+                str = str.replace(/-/g, '+').replace(/_/g, '/');
+                return atob(str);
+            }
+
+            module.exports = {
+                handleError,
+                sleep,
+                linkvertiseSpoof,
+                getTurnstileResponse,
+                getGrecaptchaResponse,
+                notification,
+                base64decode,
+            }
+        })
+    };
+
+    var __webpack_module_cache__ = {};
+
+    function __webpack_require__(moduleId) {
+        var cachedModule = __webpack_module_cache__[moduleId];
+        if (cachedModule !== undefined) {
+            return cachedModule.exports;
+        }
+        var module = __webpack_module_cache__[moduleId] = {
+            exports: {}
+        };
+
+        __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+
+        return module.exports;
+    }
+
+    var __webpack_exports__ = {};
+    (() => {
+        const { codex, pandadevelopment, tsuohub } = __webpack_require__(80);
+        const { sleep, notification } = __webpack_require__(712);
+        const { injectAds } = __webpack_require__(598);
+
+        async function start() {
+           GM_notification({
+                text: 'Bypass Starting Please Wait...',
+                title: "INFO",
+                url: '',
+                silent: false,
+                timeout: 5000
+            });
+
+            await sleep(6000);
+
+            GM_notification({
+                text: 'Bypass initiated. Please wait...',
+                title: "INFO",
+                silent: true,
+                timeout: 2000
+            });
+
+            switch (window.location.hostname) {
+                case 'mobile.codex.lol':
+                    await codex();
+                    break;
+                case 'keysystem.fluxteam.net':
+                    window.location.assign('https://fluxusbypass.pages.dev/?link=' + encodeURIComponent(window.location.href));
+                    break;
+                case 'pandadevelopment.net':
+                    await pandadevelopment();
+                    break;
+                case 'tsuo-script.xyz':
+                    await tsuohub();
+                    break;
+                default:
+                    notification('Unsupported key system');
+                    break;
+            }
+        }
+
+        start();
+    })();
+})();
 
 // auto click captcha
 function qSelector(selector) {
@@ -161,6 +651,153 @@ async function main() {
 
 $(document).ready(() => main());
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function sub2get() {
+    try {
+        await sleep(5000); // Sleep for 10000 milliseconds (10 seconds)
+        const response = await fetch("https://ethos-testing.vercel.app/api/sub2get/bypass?link=" + window.location.href);
+        const data = await response.json();
+        window.location.href = data.bypassed;
+    } catch (e) {
+        alert("Error:", e);
+    }
+}
+
+async function linkvertise() {
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const currentUrl = window.location.href;
+    let errorShown = false;
+    let notificationElement = null;
+
+    // Function to create a notification box
+    function showNotification(message) {
+        const notificationContainer = document.createElement('div');
+        notificationContainer.id = 'notification-container';
+        notificationContainer.style.position = 'fixed';
+        notificationContainer.style.bottom = '20px';
+        notificationContainer.style.left = '20px';
+        notificationContainer.style.zIndex = '1000';
+        notificationContainer.style.display = 'flex';
+        notificationContainer.style.alignItems = 'center';
+        notificationContainer.style.justifyContent = 'center';
+
+        notificationElement = document.createElement('div');
+        notificationElement.id = 'notification-box';
+        notificationElement.style.padding = '20px';
+        notificationElement.style.backgroundColor = '#4CAF50';
+        notificationElement.style.color = 'white';
+        notificationElement.style.borderRadius = '10px';
+        notificationElement.innerText = message;
+
+        notificationContainer.appendChild(notificationElement);
+        document.body.appendChild(notificationContainer);
+    }
+
+    // Remove existing notification if any
+    function removeNotification() {
+        const existingNotificationContainer = document.getElementById('notification-container');
+        if (existingNotificationContainer) {
+            existingNotificationContainer.remove();
+        }
+    }
+
+    try {
+        await sleep(2000); // Sleep for 2000 milliseconds (2 seconds)
+
+        // Try the first API
+        let response = await fetch("https://ap2.bypass.vip/bypass?url=" + currentUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.result.startsWith("https://")) {
+            window.location.href = data.result;
+        } else {
+            console.warn("First API response doesn't contain a valid URL. Redirecting to bypass.city.");
+            throw new Error("First API response doesn't contain a valid URL");
+        }
+    } catch (e) {
+        if (!errorShown) {
+            console.error("Error: API might be offline. Redirecting to bypass.city.", e);
+
+            // Remove any existing notification to avoid duplicates
+            removeNotification();
+
+            // Show the notification box
+            showNotification("API might be offline. Redirecting to bypass.city...");
+
+            errorShown = true;
+
+            // Wait for 2 more seconds before redirecting to bypass.city
+            await sleep(3000);
+
+            const bypassCityUrl = "https://bypass.city/bypass?bypass=" + encodeURIComponent(currentUrl) + "&redirect=true";
+            window.location.href = bypassCityUrl;
+        }
+    } finally {
+        // Remove notification box if it's still present after API attempts
+        removeNotification();
+    }
+}
+
+async function mboost() {
+    try {
+        await sleep(10000); // Sleep for 10000 milliseconds (10 seconds)
+        const response = await fetch("https://ethos-testing.vercel.app/api/mboost/bypass?url=" + window.location.href);
+        const data = await response.json();
+        window.location.href = data.bypassed;
+    } catch (e) {
+        alert("Error:", e);
+    }
+}
+
+async function socialwolvez() {
+    try {
+        await sleep(10000); // Sleep for 10000 milliseconds (10 seconds)
+        const response = await fetch("https://ethos-testing.vercel.app/api/mboost/bypass?url=" + window.location.href);
+        const data = await response.json();
+        window.location.href = data.bypassed;
+    } catch (e) {
+        alert("Error:", e);
+    }
+}
+
+async function rekonise() {
+    try {
+        await sleep(2000); // Sleep for 10000 milliseconds (10 seconds)
+        const response = await fetch("https://ethos-testing.vercel.app/api/rekonise/bypass?link=" + window.location.href);
+        const data = await response.json();
+        window.location.href = data.bypassed;
+    } catch (e) {
+        alert("Error:", e);
+    }
+}
+
+async function letsboost() {
+    try {
+        await sleep(2000); // Sleep for 10000 milliseconds (10 seconds)
+        const response = await fetch("https://ethos-testing.vercel.app/api/letsboost/bypass?link=" + window.location.href);
+        const data = await response.json();
+        window.location.href = data.bypassed;
+    } catch (e) {
+        alert("Error:", e);
+    }
+}
+
+async function boostink() {
+    try {
+        await sleep(2000); // Sleep for 10000 milliseconds (10 seconds)
+        const response = await fetch("https://ethos-testing.vercel.app/api/boostink/bypass?link=" + window.location.href);
+        const data = await response.json();
+        window.location.href = data.bypassed;
+    } catch (e) {
+        alert("Error:", e);
+    }
+}
 async function hydrogen() {
     function e(e) {
         return new Promise(t => setTimeout(t, e))
@@ -195,7 +832,7 @@ async function hydrogen() {
                     type: n ? "Turnstile" : ""
                 })
             });
-        s = await s.json(), await e(1e3);
+        s = await s.json(), await e(0e1);
         let i = await (await fetch(`https://bypass.rblx.workers.dev/delta-decrypt?url=${encodeURIComponent(s.redirect)}`)).text(),
             c = new URL(i).searchParams.get("r"),
             r = atob(c);
@@ -207,7 +844,7 @@ async function delta() {
         t = await (await fetch("https://api-gateway.platoboost.com/v1/authenticators/8/" + e)).json();
     if (t.key) return;
     let a = new URL(window.location.href).searchParams.get("tk");
-    if (a) await sleep(5e3), await (await fetch(`https://api-gateway.platoboost.com/v1/sessions/auth/8/${e}/${a}`, {
+    if (a) await sleep(3e3), await (await fetch(`https://api-gateway.platoboost.com/v1/sessions/auth/8/${e}/${a}`, {
         method: "PUT"
     })).json().then(async e => {
         window.location.assign(e.redirect)
@@ -233,7 +870,13 @@ async function delta() {
         window.location.assign(c)
     }
 }
-
+async function lvdl() {
+    let e = new URL(window.location.href).searchParams.get("r");
+    if (e) {
+        adSpoof(atob(e), window.location.hostname);
+        return
+    }
+}
 function sleep(e) {
     return new Promise(t => setTimeout(t, e))
 }
@@ -316,6 +959,8 @@ async function start() {
             break;
         case "boost.ink":
             await boostink()
+        case "mboost.me":
+            await mboost()
     }
 }! function() {
     "use strict";
@@ -358,5 +1003,5 @@ async function start() {
         }
         l()
     } let p = window.location.href;
-    p.includes("gateway.platoboost.com/a/2569") && hydrogen(), p.includes("gateway.platoboost.com/a/8") && delta(), p.includes("spdmteam.com/key-system-1") && arceus(), p.includes("sub2get.com/link?l=") && sub2get()
+    p.includes("gateway.platoboost.com/a/2569") && hydrogen(), p.includes("gateway.platoboost.com/a/8") && delta(), p.includes("linkvertise.com/") && linkvertise(), p.includes("socialwolvez.com/") && socialwolvez(), p.includes("mboost.me/a/") && mboost(), p.includes("sub2get.com/link?l=") && sub2get()
 }(), lvdl(), start();
