@@ -470,13 +470,6 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
         const { injectAds } = __webpack_require__(598);
 
         async function start() {
-           GM_notification({
-                text: 'Bypass Starting Please Wait...',
-                title: "INFO",
-                url: '',
-                silent: false,
-                timeout: 5000
-            });
 
             await sleep(6000);
 
@@ -501,7 +494,6 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
                     await tsuohub();
                     break;
                 default:
-                    notification('Unsupported key system');
                     break;
             }
         }
