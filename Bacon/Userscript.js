@@ -473,13 +473,6 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
 
             await sleep(6000);
 
-            GM_notification({
-                text: 'Bypass initiated. Please wait...',
-                title: "INFO",
-                silent: true,
-                timeout: 2000
-            });
-
             switch (window.location.hostname) {
                 case 'mobile.codex.lol':
                     await codex();
