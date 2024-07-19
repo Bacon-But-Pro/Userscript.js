@@ -751,16 +751,19 @@ async function socialwolvez() {
     }
 }
 
-async function rekonise() {
-    try {
-        await sleep(2000); // Sleep for 10000 milliseconds (10 seconds)
-        const response = await fetch("https://ethos-testing.vercel.app/api/rekonise/bypass?link=" + window.location.href);
-        const data = await response.json();
-        window.location.href = data.bypassed;
-    } catch (e) {
-        alert("Error:", e);
-    }
-}
+(async function rekonise() {
+  let $ = jQuery.noConflict();
+  let sPathname = window.location.pathname;
+  let sRedirectUrl = `https://api.rekonise.com/social-unlocks${sPathname}/unlock`;
+
+  try {
+    // Request the redirect url from rekonise's api and automatically redirect
+    let data = await $.getJSON(sRedirectUrl);
+    window.location.href = data['url'];
+  } catch (error) {
+    console.error('Error fetching redirect URL:', error);
+  }
+})();
 
 async function letsboost() {
     try {
