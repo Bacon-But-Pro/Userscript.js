@@ -693,7 +693,7 @@ async function linkvertise() {
         await sleep(2000); // Sleep for 2000 milliseconds (2 seconds)
 
         // Try the first API
-        let response = await fetch("https://ap2.bypass.vip/bypass?url=" + currentUrl);
+        let response = await fetch("https://api.bypass.vip/bypass?url=" + currentUrl);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
