@@ -495,146 +495,128 @@ if (currentURL.includes("https://linkvertise.com/376138/arceus-x-neo-key-system-
     })();
 })();
 
-// auto click captcha
 function qSelector(selector) {
     return document.querySelector(selector);
 }
 
 function isHidden(el) {
-    return (el.offsetParent === null)
+    return (el.offsetParent === null);
+}
+
+async function solveHCaptcha() {
+    const HC_PAUSE = 500; // ms to open (500ms = 0.5sec)
+    const HC_CHECK_BOX = "#checkbox";
+    const HC_ARIA_CHECKED = "aria-checked";
+
+    if (window.location.href.includes("checkbox")) {
+        var hc_checkboxInterval = setInterval(function() {
+            const checkBox = qSelector(HC_CHECK_BOX);
+            if (checkBox) {
+                const ariaChecked = checkBox.getAttribute(HC_ARIA_CHECKED);
+                if (ariaChecked === "true") {
+                    clearInterval(hc_checkboxInterval);
+                    console.log("HC SOLVED");
+                } else if (!isHidden(checkBox) && ariaChecked === "false") {
+                    checkBox.click();
+                    clearInterval(hc_checkboxInterval);
+                    console.log("HC OPEN BOX");
+                }
+            }
+        }, HC_PAUSE);
+    }
+}
+
+async function solveReCaptcha() {
+    const RC_PAUSE = 500; // ms to open (500ms = 0.5sec)
+    const CHECK_BOX = ".recaptcha-checkbox-border";
+    const RECAPTCHA_STATUS = "#recaptcha-accessible-status";
+    const DOSCAPTCHA = ".rc-doscaptcha-body";
+
+    setTimeout(async function() {
+        let solved = false;
+        let checkBoxClicked = false;
+        let requestCount = 0;
+        const recaptchaInitialStatus = qSelector(RECAPTCHA_STATUS) ? qSelector(RECAPTCHA_STATUS).innerText : "";
+
+        while (!solved && requestCount <= 1) {
+            try {
+                const checkBox = qSelector(CHECK_BOX);
+                if (!checkBoxClicked && checkBox && !isHidden(checkBox)) {
+                    checkBox.click();
+                    checkBoxClicked = true;
+                    console.log("RC OPEN BOX");
+                }
+                if (qSelector(RECAPTCHA_STATUS) && (qSelector(RECAPTCHA_STATUS).innerText != recaptchaInitialStatus)) {
+                    solved = true;
+                    console.log("RC SOLVED");
+                }
+                if (qSelector(DOSCAPTCHA) && qSelector(DOSCAPTCHA).innerText.length > 0) {
+                    console.log("Automated Queries Detected");
+                    solved = true;
+                }
+                requestCount++;
+                await new Promise(resolve => setTimeout(resolve, RC_PAUSE));
+            } catch (err) {
+                console.log(err.message);
+                console.log("An error occurred while solving. Stopping the solver.");
+                break;
+            }
+        }
+    }, RC_PAUSE);
+}
+
+async function solveCloudflareCaptcha() {
+    async function VerifyYouAreHuman_01() {
+        let dom = await global_module.waitForElement("input[value='Verify you are human'][type='button']", null, null, 200, -1);
+        global_module.clickElement($(dom).eq(0)[0]);
+    }
+
+    async function VerifyYouAreHuman_02() {
+        let dom = await global_module.waitForElement("input[type='checkbox']", null, null, 200, -1);
+        global_module.clickElement($(dom).eq(0)[0]);
+        dom = await global_module.waitForElement("span[class='mark']", null, null, 200, -1);
+        global_module.clickElement($(dom).eq(0)[0]);
+    }
+
+    async function VerifyYouAreHuman_03() {
+        let dom = await global_module.waitForElement("input[value='Verify you are human'][type='button']", null, null, 200, -1);
+        global_module.clickElement($(dom).eq(0)[0]);
+    }
+
+    async function main() {
+        let ray_id = $("div[class='ray-id']");
+        let hrefdom = $("a[href*='cloudflare.com'][target='_blank']");
+        if (ray_id.length > 0 && hrefdom.length > 0) {
+            await VerifyYouAreHuman_01();
+            return;
+        }
+        if (window.location.host == 'challenges.cloudflare.com' && $("div[id='success']").length > 0 && $("div[id='fail']").length > 0 && $("div[id='expired']").length > 0) {
+            await VerifyYouAreHuman_02();
+            return;
+        }
+        if ($('div[class="logo"]').length > 0) {
+            await VerifyYouAreHuman_03();
+            return;
+        }
+    }
+
+    $(document).ready(() => main());
 }
 
 (function() {
     'use strict';
 
+    const domain = (window.location != window.parent.location) ? document.referrer.toString() : document.location.toString();
+    const excludedDomains = ['example.com', 'PartOfUrlName', 'paypal.com'];
 
-    var domain = (window.location != window.parent.location) ? document.referrer.toString() : document.location.toString();
-    // excluding domains
-    if(
-        domain.indexOf('example.com') == -1
-        &&
-        domain.indexOf('PartOfUrlName') == -1
-        &&
-        domain.indexOf('paypal.com') == -1
-    ) {
-
-
-
-        // HCAPTCHA SECTION
-        const HC_PAUSE = "3000"; // ms to open ( 3000ms = 5sec )
-        const HC_CHECK_BOX = "#checkbox";
-        const HC_ARIA_CHECKED = "aria-checked";
-
-        if (window.location.href.includes("checkbox")) {
-            var hc_checkboxInterval = setInterval(function() {
-                if (!qSelector(HC_CHECK_BOX)) {
-                } else if (qSelector(HC_CHECK_BOX).getAttribute(HC_ARIA_CHECKED) == "true") {
-                    clearInterval(hc_checkboxInterval);
-                    console.log("HC SOLVED");
-                } else if (!isHidden(qSelector(HC_CHECK_BOX)) && qSelector(HC_CHECK_BOX).getAttribute(HC_ARIA_CHECKED) == "false") {
-                    qSelector(HC_CHECK_BOX).click();
-                    clearInterval(hc_checkboxInterval);
-                    console.log("HC OPEN BOX");
-                } else {
-                    return;
-                }
-
-            }, HC_PAUSE );
-        }
-
-
-
-        // RECAPTCHA SECTION
-        const RC_PAUSE = "3000"; // ms to open ( 3000ms = 5sec )
-        const CHECK_BOX = ".recaptcha-checkbox-border";
-        const RECAPTCHA_STATUS = "#recaptcha-accessible-status";
-        const DOSCAPTCHA = ".rc-doscaptcha-body";
-
-        var rc_checkboxInterval = setTimeout(function() {
-
-            var solved = false;
-            var checkBoxClicked = false;
-            var requestCount = 0;
-
-            var recaptchaInitialStatus = qSelector(RECAPTCHA_STATUS) ? qSelector(RECAPTCHA_STATUS).innerText : ""
-            function isHidden(el) {
-                return(el.offsetParent === null)
-            }
-            try {
-                if(!checkBoxClicked && qSelector(CHECK_BOX) && !isHidden(qSelector(CHECK_BOX))) {
-                    qSelector(CHECK_BOX).click();
-                    checkBoxClicked = true;
-                    console.log("RC OPEN BOX");
-                }
-                //Check if the captcha is solved
-                if(qSelector(RECAPTCHA_STATUS) && (qSelector(RECAPTCHA_STATUS).innerText != recaptchaInitialStatus)) {
-                    solved = true;
-                    console.log("RC SOLVED");
-                }
-                if(requestCount > 1) {
-                    console.log("Attempted Max Retries. Stopping the solver");
-                    solved = true;
-                }
-                //Stop solving when Automated queries message is shown
-                if(qSelector(DOSCAPTCHA) && qSelector(DOSCAPTCHA).innerText.length > 0) {
-                    console.log("Automated Queries Detected");
-                }
-            } catch(err) {
-                console.log(err.message);
-                console.log("An error occurred while solving. Stopping the solver.");
-            }
-
-        }, RC_PAUSE );
-
+    if (!excludedDomains.some(excluded => domain.includes(excluded))) {
+        solveHCaptcha();
+        solveReCaptcha();
+        solveCloudflareCaptcha();
+    } else {
+        console.log(`${domain} EXCLUDED!`);
     }
-    else {
-
-        console.log( domain +" EXCLUDED!" );
-
-    }
-
-
 })();
-
-// auto click Autopass Cloudflare CAPTCHA
-
-global_module = window['global_module'];
-
-async function VerifyYouAreHuman_01() {
-    let dom = await global_module.waitForElement("input[value='Verify you are human'][type='button']", null, null, 200, -1);
-    global_module.clickElement($(dom).eq(0)[0]);
-}
-
-async function VerifyYouAreHuman_02() {
-    let dom = await global_module.waitForElement("input[type='checkbox']", null, null, 200, -1);
-    global_module.clickElement($(dom).eq(0)[0]);
-    dom = await global_module.waitForElement("span[class='mark']", null, null, 200, -1);
-    global_module.clickElement($(dom).eq(0)[0]);
-}
-
-async function VerifyYouAreHuman_03() {
-    let dom = await global_module.waitForElement("input[value='Verify you are human'][type='button']", null, null, 200, -1);
-    global_module.clickElement($(dom).eq(0)[0]);
-}
-
-async function main() {
-    let ray_id = $("div[class='ray-id']");
-    let hrefdom = $("a[href*='cloudflare.com'][target='_blank']");
-    if (ray_id.length > 0 && hrefdom.length > 0) {
-        VerifyYouAreHuman_01();
-        return;
-    }
-    if (window.location.host == 'challenges.cloudflare.com' && $("div[id='success']").length > 0 && $("div[id='fail']").length > 0 && $("div[id='expired']").length > 0) {
-        VerifyYouAreHuman_02();
-        return;
-    }
-    if ($('div[class="logo"]').length > 0) {
-        VerifyYouAreHuman_03();
-        return;
-    }
-}
-
-$(document).ready(() => main());
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -655,10 +637,9 @@ async function linkvertise() {
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const currentUrl = window.location.href;
     let errorShown = false;
-    let notificationElement = null;
 
     // Function to create a notification box
-    function showNotification(message) {
+    function showNotification(message, useBypassCity = false) {
         const notificationContainer = document.createElement('div');
         notificationContainer.id = 'notification-container';
         notificationContainer.style.position = 'fixed';
@@ -668,16 +649,54 @@ async function linkvertise() {
         notificationContainer.style.display = 'flex';
         notificationContainer.style.alignItems = 'center';
         notificationContainer.style.justifyContent = 'center';
+        notificationContainer.style.flexDirection = 'column';
+        notificationContainer.style.backgroundColor = '#4CAF50';
+        notificationContainer.style.padding = '20px';
+        notificationContainer.style.borderRadius = '10px';
+        notificationContainer.style.color = 'white';
 
-        notificationElement = document.createElement('div');
+        const notificationElement = document.createElement('div');
         notificationElement.id = 'notification-box';
-        notificationElement.style.padding = '20px';
-        notificationElement.style.backgroundColor = '#4CAF50';
-        notificationElement.style.color = 'white';
-        notificationElement.style.borderRadius = '10px';
         notificationElement.innerText = message;
 
         notificationContainer.appendChild(notificationElement);
+
+        if (useBypassCity) {
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '10px';
+            buttonContainer.style.marginTop = '10px';
+
+            const yesButton = document.createElement('button');
+            yesButton.innerText = 'Yes';
+            yesButton.style.padding = '10px';
+            yesButton.style.border = 'none';
+            yesButton.style.backgroundColor = '#008CBA';
+            yesButton.style.color = 'white';
+            yesButton.style.borderRadius = '5px';
+            yesButton.style.cursor = 'pointer';
+            yesButton.onclick = function () {
+                const bypassCityUrl = "https://bypass.city/bypass?bypass=" + encodeURIComponent(currentUrl) + "&redirect=true";
+                window.location.href = bypassCityUrl;
+            };
+
+            const noButton = document.createElement('button');
+            noButton.innerText = 'No';
+            noButton.style.padding = '10px';
+            noButton.style.border = 'none';
+            noButton.style.backgroundColor = '#f44336';
+            noButton.style.color = 'white';
+            noButton.style.borderRadius = '5px';
+            noButton.style.cursor = 'pointer';
+            noButton.onclick = function () {
+                removeNotification();
+            };
+
+            buttonContainer.appendChild(yesButton);
+            buttonContainer.appendChild(noButton);
+            notificationContainer.appendChild(buttonContainer);
+        }
+
         document.body.appendChild(notificationContainer);
     }
 
@@ -707,25 +726,16 @@ async function linkvertise() {
         }
     } catch (e) {
         if (!errorShown) {
-            console.error("Error: API might be offline. Redirecting to bypass.city.", e);
+            console.error("Error: API might be offline. Do you want to use Bypass.city?", e);
 
             // Remove any existing notification to avoid duplicates
             removeNotification();
 
-            // Show the notification box
-            showNotification("API might be offline. Redirecting to bypass.city...");
+            // Show the notification box with Yes and No options
+            showNotification("API might be offline. Do you want to use Bypass.city?", true);
 
             errorShown = true;
-
-            // Wait for 2 more seconds before redirecting to bypass.city
-            await sleep(3000);
-
-            const bypassCityUrl = "https://bypass.city/bypass?bypass=" + encodeURIComponent(currentUrl) + "&redirect=true";
-            window.location.href = bypassCityUrl;
         }
-    } finally {
-        // Remove notification box if it's still present after API attempts
-        removeNotification();
     }
 }
 
