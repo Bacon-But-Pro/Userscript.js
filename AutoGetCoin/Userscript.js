@@ -1,19 +1,3 @@
-// ==UserScript==
-// @name         Auto Coins
-// @namespace    https://bot-hosting.net/
-// @version      1.2
-// @description  Automatically claim coins on bot-hosting.net. Need to solve the captcha to bypass
-// @author       Bacon But Pro
-// @match        https://bot-hosting.net/*
-// @match        https://*/recaptcha/*
-// @match        https://*.hcaptcha.com/*hcaptcha-challenge*
-// @match        https://*.hcaptcha.com/*checkbox*
-// @match        https://*.hcaptcha.com/*captcha*
-// @grant        none
-// @license      MIT
-// @icon         https://bot-hosting.net/assets/img/bothosting2.png
-// ==/UserScript==
-
 (function() {
     'use strict';
 
