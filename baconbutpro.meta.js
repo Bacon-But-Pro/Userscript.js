@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Bypass Key System
 // @homepageURL  https://discord.gg/gFNAH7WNZj
-// @namespace    https://greasyfork.org/en/scripts/493960-arceus-bypass
-// @version      1.8.4
+// @namespace    Best Bypassing
+// @version      1.8.5
 // @description  Bypass Arceus, Hydrogen, Delta, Trigon, Vegax, Codex, Linkvertise
 // @author       Bacon But Pro
 // @match        https://linkvertise.com/376138/arceus-x-neo-key-system-1?o=sharing*
@@ -37,11 +37,15 @@
 // @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/AutoGetCoin/Userscript.js
 // @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/React.js
 // @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/Main.js
+// @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/Lootlabs.js
+// @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/FastLootLabs.js
 
+// @run-at       document-start
 // @run-at       document-end
 // @grant        GM_xmlhttpRequest
 // @grant        GM_notification
 // @grant        GM_openInTab
+// @grant        unsafeWindow
 
 // @license      Bacon
 // @connect      linkvertise.com
