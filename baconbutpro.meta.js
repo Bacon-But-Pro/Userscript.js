@@ -60,3 +60,5 @@
 // @downloadURL https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/baconbutpro.meta.js
 // @updateURL https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/baconbutpro.meta.js
 // ==/UserScript==
+
+print('hi')
