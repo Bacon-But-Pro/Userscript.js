@@ -57,6 +57,6 @@
 // @connect      hohohubv-ac90f67762c4.herokuapp.com
 // @connect      tsuo-script.xyz
 // @icon         https://cdn141.picsart.com/351217840073211.png
-// @downloadURL https://update.greasyfork.org/scripts/493960/Bypass%20Key%20System.user.js
-// @updateURL https://update.greasyfork.org/scripts/493960/Bypass%20Key%20System.meta.js
+// @downloadURL https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/baconbutpro.meta.js
+// @updateURL https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/baconbutpro.meta.js
 // ==/UserScript==
