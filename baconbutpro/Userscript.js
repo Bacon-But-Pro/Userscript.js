@@ -2,11 +2,11 @@
 // @name         Bypass Key System
 // @homepageURL  https://discord.gg/gFNAH7WNZj
 // @namespace    https://greasyfork.org/en/scripts/493960-arceus-bypass
-// @version      1.8.2
+// @version      1.8.4
 // @description  Bypass Arceus, Hydrogen, Delta, Trigon, Vegax, Codex, Linkvertise
 // @author       Bacon But Pro
 // @match        https://linkvertise.com/376138/arceus-x-neo-key-system-1?o=sharing*
-// @match        https://linkvertise.com/*
+// @match        https://linkvertise.com/*/*
 // @match        https://socialwolvez.com/*
 // @match        https://rekonise.com/*
 // @match        https://mboost.me/a/*
@@ -28,9 +28,14 @@
 // @match        https://*.hcaptcha.com/*hcaptcha-challenge*
 // @match        https://*.hcaptcha.com/*checkbox*
 // @match        https://*.hcaptcha.com/*captcha*
+// @match        https://bot-hosting.net/*
+// @match        *://trigonevo.com/getkey/?hwid=*
+// @match        https://work.ink/*/*
 // @require     https://greasyfork.org/scripts/464929-module-jquery-xiaoying/code/module_jquery_XiaoYing.js
 // @require     https://greasyfork.org/scripts/464780-global-module/code/global_module.js
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js
+// @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/AutoGetCoin/Userscript.js
+// @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/React.js
 // @require     https://raw.githubusercontent.com/Bacon-But-Pro/Userscript.js/main/Main.js
 
 // @run-at       document-end
