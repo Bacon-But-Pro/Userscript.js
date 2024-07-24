@@ -30,9 +30,45 @@ async function lootlabs() {
     }
 }
 
+function createNotificationBox() {
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "50%";
+    modal.style.left = "50%";
+    modal.style.transform = "translate(-50%, -50%)";
+    modal.style.backgroundColor = "#fff";
+    modal.style.padding = "20px";
+    modal.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.5)";
+    modal.style.zIndex = "1000";
+    modal.style.textAlign = "center";
+
+    const message = document.createElement("p");
+    message.textContent = "Do you want to use the API bypass?";
+    modal.appendChild(message);
+
+    const yesButton = document.createElement("button");
+    yesButton.textContent = "Yes";
+    yesButton.style.margin = "0 10px";
+    yesButton.onclick = () => {
+        modal.remove();
+        lootlabs();
+    };
+    modal.appendChild(yesButton);
+
+    const noButton = document.createElement("button");
+    noButton.textContent = "No";
+    noButton.style.margin = "0 10px";
+    noButton.onclick = () => {
+        modal.remove();
+    };
+    modal.appendChild(noButton);
+
+    document.body.appendChild(modal);
+}
+
 const p = window.location.href;
 const lootlabsRegex = /https:\/\/(loot-link\.com|loot-links\.com|lootlink\.org|lootlinks\.co|lootdest\.info|lootdest\.org|lootdest\.com|links-loot\.com|linksloot\.net)\/s\?.*/;
 
 if (lootlabsRegex.test(p)) {
-    lootlabs();
+    createNotificationBox();
 }
