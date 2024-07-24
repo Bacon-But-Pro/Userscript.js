@@ -9,7 +9,7 @@
 // @match        https://linkvertise.com/*/*
 // @match        https://socialwolvez.com/*
 // @match        https://rekonise.com/*
-// @match        https://mboost.me/a/*
+// @match        https://mboost.me/a/*a
 // @match        https://loot-link.com/s?*
 // @match        https://loot-links.com/s?*
 // @match        https://lootlink.org/s?*
